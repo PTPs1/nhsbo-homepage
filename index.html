@@ -1,29 +1,508 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NHSBO - Not History But Ours</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
+            line-height: 1.6;
             background-color: #f5f5f5;
         }
-        h1 {
-            color: #333;
-            text-align: center;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        p {
-            color: #666;
-            line-height: 1.6;
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 2rem 0;
             text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Featured Video Section */
+        .featured-video {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+
+        /* Latest Videos Grid */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: scale 0.3s;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            scale: 1.05;
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 0, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .play-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-card:hover .play-button {
+            background: rgba(255, 0, 0, 1);
+            scale: 1.1;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .video-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .video-meta {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Channel Info Section */
+        .channel-info {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .channel-link {
+            display: inline-block;
+            background: #ff0000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .channel-link:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error States */
+        .error {
+            background: #ffe6e6;
+            border: 1px solid #ffcccc;
+            color: #cc0000;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                padding: 1.5rem 0;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .video-wrapper iframe {
+                height: 250px;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* About Section */
+        .about {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .about h2 {
+            color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to Not History But Ours</h1>
-    <p>Your story platform is now live!</p>
-    <p>This is the homepage for NHSBO - where stories matter.</p>
+    <header>
+        <div class="container">
+            <h1>Not History But Ours</h1>
+            <p class="tagline">Where Stories Matter - Connecting YouTube to Web</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Featured Video Section -->
+        <section class="section featured-video">
+            <h2>Featured Story</h2>
+            <div class="video-wrapper">
+                <iframe id="featured-video" 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                        title="Featured Video" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+            <p style="margin-top: 1rem; color: #666;">
+                Update the video ID in the code to feature your latest story
+            </p>
+        </section>
+
+        <!-- Latest Videos from Channel -->
+        <section class="section">
+            <h2>Latest Stories from Our Channel</h2>
+            <div id="videos-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading latest videos...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel Info -->
+        <section class="section channel-info">
+            <h2>Follow Our YouTube Channel</h2>
+            <p>Don't miss any of our stories! Subscribe to our YouTube channel for the latest content.</p>
+            <a href="https://www.youtube.com/channel/UCA3BDqOcS4LvpHalpOlw" 
+               class="channel-link" 
+               target="_blank">
+                🔔 Subscribe to PTPstudios
+            </a>
+        </section>
+
+        <!-- About Section -->
+        <section class="section about">
+            <h2>About NHSBO</h2>
+            <p>Not History But Ours (NHSBO) is a platform dedicated to sharing authentic stories that matter. Through our YouTube channel and this website, we bring you content that goes beyond traditional narratives.</p>
+            <p style="margin-top: 1rem;">Our mission is to create a space where every story has value and every voice can be heard.</p>
+        </section>
+    </div>
+
+    <script>
+        // YouTube Channel Configuration
+        const CHANNEL_ID = 'UCA3BDqOcS4LvpHalpOlw';
+        AIzaSyBUUfaLaaFtqDj0E2XrCj1My-uv3UZstkI // Replace with your actual API key
+        
+        // Alternative: Use YouTube RSS feed (no API key required)
+        const USE_RSS_FEED = false; // Set to false if you have an API key
+
+        // Function to load videos using YouTube Data API
+        async function loadVideosWithAPI() {
+            try {
+                const response = await fetch(
+                    `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&maxResults=6&type=video`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                displayVideos(data.items);
+            } catch (error) {
+                console.error('Error loading videos with API:', error);
+                showError('Unable to load videos with API. Falling back to manual method.');
+                loadManualVideos();
+            }
+        }
+
+        // Function to load videos using RSS feed (no API key needed)
+        async function loadVideosWithRSS() {
+            try {
+                // Note: Due to CORS restrictions, you might need a proxy service
+                // This is a simplified example - in production, use a backend proxy
+                const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+                
+                // For now, show manual videos as RSS parsing requires backend
+                console.log('RSS URL:', rssUrl);
+                loadManualVideos();
+            } catch (error) {
+                console.error('Error loading RSS feed:', error);
+                loadManualVideos();
+            }
+        }
+
+        // Function to display sample/manual videos
+        function loadManualVideos() {
+            const sampleVideos = [
+                {
+                    id: { videoId: 'dQw4w9WgXcQ' },
+                    snippet: {
+                        title: 'Sample Story 1 - NHSBO Featured Content',
+                        description: 'This is a sample video. Replace with your actual YouTube videos.',
+                        thumbnails: {
+                            medium: {
+                                url: 'https://via.placeholder.com/320x180/3498db/ffffff?text=Sample+Video+1'
+                            }
+                        },
+                        publishedAt: '2024-01-15T10:00:00Z'
+                    }
+                },
+                {
+                    id: { videoId: 'dQw4w9WgXcQ' },
+                    snippet: {
+                        title: 'Sample Story 2 - Community Spotlight',
+                        description: 'Another sample video showing the layout. Add your real video IDs here.',
+                        thumbnails: {
+                            medium: {
+                                url: 'https://via.placeholder.com/320x180/2ecc71/ffffff?text=Sample+Video+2'
+                            }
+                        },
+                        publishedAt: '2024-01-10T10:00:00Z'
+                    }
+                },
+                {
+                    id: { videoId: 'dQw4w9WgXcQ' },
+                    snippet: {
+                        title: 'Sample Story 3 - Behind the Scenes',
+                        description: 'Third sample video. Once you add your API key, these will be replaced with real videos.',
+                        thumbnails: {
+                            medium: {
+                                url: 'https://via.placeholder.com/320x180/e74c3c/ffffff?text=Sample+Video+3'
+                            }
+                        },
+                        publishedAt: '2024-01-05T10:00:00Z'
+                    }
+                }
+            ];
+            
+            displayVideos(sampleVideos);
+        }
+
+        // Function to display videos in the grid
+        function displayVideos(videos) {
+            const container = document.getElementById('videos-container');
+            
+            if (!videos || videos.length === 0) {
+                container.innerHTML = '<p class="error">No videos found.</p>';
+                return;
+            }
+
+            const videosHTML = videos.map(video => {
+                const videoId = video.id ? video.id.videoId : video.id;
+                const title = video.snippet.title;
+                const description = video.snippet.description.substring(0, 150) + '...';
+                const thumbnail = video.snippet.thumbnails.medium.url;
+                const publishDate = new Date(video.snippet.publishedAt).toLocaleDateString();
+
+                return `
+                    <div class="video-card" onclick="openVideo('${videoId}')">
+                        <div class="video-thumbnail">
+                            <img src="${thumbnail}" alt="${title}" loading="lazy">
+                            <div class="play-button"></div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${title}</div>
+                            <div class="video-description">${description}</div>
+                            <div class="video-meta">Published: ${publishDate}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `<div class="videos-grid">${videosHTML}</div>`;
+        }
+
+        // Function to open video in new tab or embedded player
+        function openVideo(videoId) {
+            // Option 1: Open in new tab
+            window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+            
+            // Option 2: Update featured video (uncomment to use)
+            // document.getElementById('featured-video').src = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        // Function to show error message
+        function showError(message) {
+            const container = document.getElementById('videos-container');
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (USE_RSS_FEED || API_KEY === 'YOUR_API_KEY_HERE') {
+                loadVideosWithRSS();
+            } else {
+                loadVideosWithAPI();
+            }
+        });
+
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add loading states to external links
+            document.querySelectorAll('a[href^="http"]').forEach(link => {
+                link.addEventListener('click', function() {
+                    this.style.opacity = '0.7';
+                    this.innerHTML += ' <span style="font-size: 0.8em;">↗</span>';
+                });
+            });
+        });
+    </script>
 </body>
 </html>
