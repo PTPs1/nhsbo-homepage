@@ -7,7 +7,25 @@
 
 \f0\fs24 \cf0 <!DOCTYPE html>\
 <html lang="en">\
-<head>\
+<<style>
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+        margin: 20px 0; /* Adds spacing above and below */
+    }
+    
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px; /* Rounds the corners */
+    }
+</style>>\
     <meta charset="UTF-8">\
     <meta name="viewport" content="width=device-width, initial-scale=1.0">\
     <title>NHSBO - National High School Band Orchestra</title>\
@@ -16,8 +34,13 @@
             margin: 0;\
             padding: 0;\
             box-sizing: border-box;\
-        \}\
-\
+        \}\<iframe 
+    src="https://www.youtube.com/embed/videoseries?list=UU_PTPManifest" 
+    title="NHS Business Office Video" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+</iframe>\
         body \{\
             font-family: 'Arial', sans-serif;\
             line-height: 1.6;\
